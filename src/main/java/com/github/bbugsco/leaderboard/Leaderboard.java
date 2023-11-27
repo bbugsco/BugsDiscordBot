@@ -41,7 +41,10 @@ public class Leaderboard implements EventListener {
 
 			// Calculate message xp
 			Message message = ((MessageReceivedEvent) genericEvent).getMessage();
-			int length = message.getContentRaw().length();
+			String messageContent = message.getContentRaw();
+			// Ignore bot commands
+			if (messageContent.equalsIgnoreCase("!level") || messageContent.equalsIgnoreCase("!leaderboard")) return;
+			int length = messageContent.length();
 			double xp = (Math.log(length) / Math.log(1.1)) + 1;
 
 			if (leaderboardData.getData().containsKey(member)) {
