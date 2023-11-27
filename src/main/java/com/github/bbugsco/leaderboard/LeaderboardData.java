@@ -7,17 +7,13 @@ import java.util.HashMap;
 
 public class LeaderboardData implements Serializable {
 
-	private final HashMap<Member, Integer> data;
-
-	public LeaderboardData(HashMap<Member, Integer> data) {
-		this.data = data;
-	}
+	private final HashMap<Member, Double> data;
 
 	public LeaderboardData() {
 		this.data = new HashMap<>();
 	}
 
-	public HashMap<Member, Integer> getData() {
+	public HashMap<Member, Double> getData() {
 		return data;
 	}
 

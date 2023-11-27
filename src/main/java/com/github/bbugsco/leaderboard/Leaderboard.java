@@ -1,6 +1,7 @@
 package com.github.bbugsco.leaderboard;
 
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
@@ -17,8 +18,8 @@ public class Leaderboard implements EventListener {
 
 	private final HashMap<Member, Long> lastMessage;
 
-	public Leaderboard(HashMap<Member, Long> lastMessage) {
-		this.lastMessage = lastMessage;
+	public Leaderboard() {
+		this.lastMessage = new HashMap<>();
 
 		if (this.saveFileExists()) {
 			this.leaderboardData = deserialize();
@@ -36,9 +37,15 @@ public class Leaderboard implements EventListener {
 		if (genericEvent instanceof MessageReceivedEvent) {
 
 			Member member = ((MessageReceivedEvent) genericEvent).getMember();
+			if (member == null) return;
+
+			// Calculate message xp
+			Message message = ((MessageReceivedEvent) genericEvent).getMessage();
+			int length = message.getContentRaw().length();
+			double xp = (Math.log(length) / Math.log(1.1)) + 1;
 
 			if (leaderboardData.getData().containsKey(member)) {
-
+				// Check cool down
 				if (lastMessage.containsKey(member)) {
 					if (System.currentTimeMillis() - 5000 < lastMessage.get(member)) {
 						// Cool down
@@ -46,14 +53,15 @@ public class Leaderboard implements EventListener {
 					}
 				}
 
-				leaderboardData.getData().put(member, leaderboardData.getData().get(member) + 1);
+				// Update leaderboard
+				leaderboardData.getData().put(member, leaderboardData.getData().get(member) + xp);
 			} else {
-				leaderboardData.getData().put(member, 1);
+				leaderboardData.getData().put(member, xp);
 			}
 
 			System.out.println(member.getEffectiveName() + " said something");
-			lastMessage.put(member,  System.currentTimeMillis());
-
+			this.lastMessage.put(member,  System.currentTimeMillis());
+			this.serialize();
 		}
 	}
 
