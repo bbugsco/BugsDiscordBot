@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -37,10 +38,21 @@ public class Leaderboard implements EventListener {
 			Member member = ((MessageReceivedEvent) genericEvent).getMember();
 
 			if (leaderboardData.getData().containsKey(member)) {
-				leaderboardData.getData().replace(member, leaderboardData.getData().get(member) + 1);
+
+				if (lastMessage.containsKey(member)) {
+					if (System.currentTimeMillis() - 5000 < lastMessage.get(member)) {
+						// Cool down
+						return;
+					}
+				}
+
+				leaderboardData.getData().put(member, leaderboardData.getData().get(member) + 1);
 			} else {
 				leaderboardData.getData().put(member, 1);
 			}
+
+			System.out.println(member.getEffectiveName() + " said something");
+			lastMessage.put(member,  System.currentTimeMillis());
 
 		}
 	}
