@@ -17,6 +17,10 @@ public class LeaderboardData implements Serializable {
 		return data;
 	}
 
+	public double getRawXP(Member member) {
+		return data.getOrDefault(member, 0.0);
+	}
+
 }
 
 
