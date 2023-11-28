@@ -52,7 +52,7 @@ public class Bot {
 
 		// Add listeners
 		builder.addEventListeners(new ReadyListener());
-		builder.addEventListeners(new MemberJoin());
+		builder.addEventListeners(new MemberJoin(this));
 		builder.addEventListeners(new AutoRoleOnJoin());
 		builder.addEventListeners(new UpdateLeaderboardListener(this.leaderboard));
 		builder.addEventListeners(new CommandListener(this));
