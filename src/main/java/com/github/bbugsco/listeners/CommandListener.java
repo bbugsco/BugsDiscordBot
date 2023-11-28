@@ -58,7 +58,6 @@ public class CommandListener implements EventListener {
 					return;
 				}
 			case LEADERBOARD:
-
 				// Get Sender and scores
 				Member commandSender = message.getMember();
 				HashMap<Member, Double> scores = new HashMap<>();
@@ -102,7 +101,7 @@ public class CommandListener implements EventListener {
 								builder.append("> ").append(member.getEffectiveName()).append(": ").append(xp).append(" xp\n");
 							}
 
-							// 3 Close
+							// 3 close ranks to sender
 							builder.append("\n");
 							int rank = getRank(commandSender, sortedMap);
 							if (commandSender == null) {
@@ -115,19 +114,16 @@ public class CommandListener implements EventListener {
 
 							message.getChannel().sendMessage(builder.toString()).queue();
 						}
-
 					}
 				});
-
-
-			case LEVEL:
-
 		}
 	}
+
 
 	private Member getByRank(int i, Map<Member, Double> sortedMap) {
 		return (Member) sortedMap.keySet().toArray()[i];
 	}
+
 
 	private int getRank(Member member, Map<Member, Double> sortedMap) {
 		int rank = 0;
@@ -146,6 +142,7 @@ public class CommandListener implements EventListener {
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 	}
 
+
 	private CompletableFuture<List<Member>> loadMembers(Guild guild) {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
@@ -159,4 +156,3 @@ public class CommandListener implements EventListener {
 	}
 
 }
-

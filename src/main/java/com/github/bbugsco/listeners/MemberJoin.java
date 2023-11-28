@@ -13,16 +13,17 @@ import java.util.concurrent.TimeUnit;
 
 public class MemberJoin implements EventListener {
 
+
 	@Override
 	public void onEvent(@NotNull GenericEvent event) {
 		if (event instanceof GuildMemberJoinEvent) {
 			System.out.println("Member joined: " + ((GuildMemberJoinEvent) event).getMember().getEffectiveName() + " in guild " + ((GuildMemberJoinEvent) event).getGuild().getName() + ".");
-			Guild guild = ((GuildMemberJoinEvent) event).getGuild();
 
+			// Add member role
+			Guild guild = ((GuildMemberJoinEvent) event).getGuild();
 			if (getMemberRole(guild) == null) {
 				createMemberRole(guild);
 			}
-
 			while (getMemberRole(guild) == null) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(50);
@@ -31,10 +32,16 @@ public class MemberJoin implements EventListener {
 					System.out.println(e.getMessage());
 				}
 			}
-
 			addRoleToMember(((GuildMemberJoinEvent) event).getMember(), getMemberRole(guild));
+
+			// Welcome message
+			if (((GuildMemberJoinEvent) event).getGuild().getDefaultChannel() == null) { return; }
+			((GuildMemberJoinEvent) event).getGuild().getDefaultChannel().asTextChannel().sendMessage("```\nWelcome " + ((GuildMemberJoinEvent) event).getMember().getAsMention() + " to Bugs SMP!\n```").queue();
+
+
 		}
 	}
+
 
 	private void createMemberRole(Guild guild) {
 		guild.createRole()
@@ -43,6 +50,7 @@ public class MemberJoin implements EventListener {
 				.setHoisted(true)
 				.queue(role -> System.out.println("Role created: " + role.getName() + " in guild " + guild.getName()));
 	}
+
 
 	private Role getMemberRole(Guild guild) {
 		for (Role role : guild.getRoles()) {
@@ -53,8 +61,11 @@ public class MemberJoin implements EventListener {
 		return null;
 	}
 
+
 	private void addRoleToMember(Member member, Role role) {
 		member.getGuild().addRoleToMember(member, role).queue(success -> System.out.println("Role added to " + member.getEffectiveName() + ": " + role.getName()),
 		failure -> System.out.println("Failed to add role to " + member.getEffectiveName() + ": " + failure.getMessage()));
 	}
+
+
 }
