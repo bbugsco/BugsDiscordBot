@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.hooks.EventListener;
 
 import org.jetbrains.annotations.NotNull;
@@ -63,9 +64,12 @@ public class MemberJoin implements EventListener {
 
 
 	private void addRoleToMember(Member member, Role role) {
-		member.getGuild().addRoleToMember(member, role).queue(success -> System.out.println("Role added to " + member.getEffectiveName() + ": " + role.getName()),
-		failure -> System.out.println("Failed to add role to " + member.getEffectiveName() + ": " + failure.getMessage()));
+		try {
+			member.getGuild().addRoleToMember(member, role).queue(success -> System.out.println("Role added to " + member.getEffectiveName() + ": " + role.getName()), failure -> System.out.println("Failed to add role to " + member.getEffectiveName() + ": " + failure.getMessage()));
+		} catch(HierarchyException e) {
+			e.fillInStackTrace();
+			System.out.println(e.getMessage());
+		}
 	}
-
 
 }
