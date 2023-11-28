@@ -8,7 +8,6 @@ import com.github.bbugsco.listeners.MemberJoin;
 import com.github.bbugsco.listeners.ReadyListener;
 
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
@@ -43,7 +42,7 @@ public class Bot {
 		builder.setEventPassthrough(true);
 		builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE);
 		builder.setBulkDeleteSplittingEnabled(false);
-		builder.setActivity(Activity.of(Activity.ActivityType.WATCHING, "you"));
+		// builder.setActivity(Activity.of(Activity.ActivityType.WATCHING, "you"));
 
 		// Add intents
 		builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
