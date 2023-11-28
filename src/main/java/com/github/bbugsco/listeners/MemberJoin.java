@@ -37,7 +37,7 @@ public class MemberJoin implements EventListener {
 
 			// Welcome message
 			if (((GuildMemberJoinEvent) event).getGuild().getDefaultChannel() == null) { return; }
-			((GuildMemberJoinEvent) event).getGuild().getDefaultChannel().asTextChannel().sendMessage("```\nWelcome " + ((GuildMemberJoinEvent) event).getMember().getAsMention() + " to Bugs SMP!\n```").queue();
+			((GuildMemberJoinEvent) event).getGuild().getDefaultChannel().asTextChannel().sendMessage(">    **Welcome " + ((GuildMemberJoinEvent) event).getMember().getAsMention() + " to Bugs SMP!**").queue();
 
 
 		}
