@@ -1,6 +1,8 @@
 package com.github.bbugsco;
 
 import com.github.bbugsco.leaderboard.Leaderboard;
+import com.github.bbugsco.leaderboard.UpdateLeaderboardListener;
+import com.github.bbugsco.listeners.AutoRoleOnJoin;
 import com.github.bbugsco.listeners.CommandListener;
 import com.github.bbugsco.listeners.MemberJoin;
 import com.github.bbugsco.listeners.ReadyListener;
@@ -10,18 +12,34 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 public class Bot {
 
 	private final Leaderboard leaderboard;
+	private final Properties properties;
 
 	public Bot(String token) {
+		// Initialize leaderboard
 		this.leaderboard = new Leaderboard();
 
+		// Load properties from file
+		this.properties = new Properties();
+		try {
+			String FILENAME = "bugs_discord_bot.properties";
+			FileInputStream inputStream = new FileInputStream(FILENAME);
+			properties.load(inputStream);
+		} catch (IOException e) {
+			e.fillInStackTrace();
+			System.out.println(e.getMessage());
+		}
 
 		// Create bot
 		JDABuilder builder = JDABuilder.createDefault(token);
 
-		// Settomgs
+		// Settings
 		builder.setEventPassthrough(true);
 		builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE);
 		builder.setBulkDeleteSplittingEnabled(false);
@@ -36,7 +54,8 @@ public class Bot {
 		// Add listeners
 		builder.addEventListeners(new ReadyListener());
 		builder.addEventListeners(new MemberJoin());
-		builder.addEventListeners(this.leaderboard);
+		builder.addEventListeners(new AutoRoleOnJoin());
+		builder.addEventListeners(new UpdateLeaderboardListener(this.leaderboard));
 		builder.addEventListeners(new CommandListener(this));
 
 		builder.build();
@@ -44,6 +63,10 @@ public class Bot {
 
 	public Leaderboard getLeaderboard() {
 		return this.leaderboard;
+	}
+
+	public Properties getProperties() {
+		return this.properties;
 	}
 
 }

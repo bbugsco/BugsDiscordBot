@@ -1,1 +1,3 @@
-nohup java -jar BugsDiscordBot0.1.jar > output.log 2>&1 &
+current_dir=$(pwd)
+file_path="$current_dir/target/BugsDiscordBot-0.1.jar"
+nohup java -jar "$file_path" > output.log 2>&1 &
