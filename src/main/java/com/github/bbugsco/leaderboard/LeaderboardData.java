@@ -7,18 +7,18 @@ import java.util.HashMap;
 
 public class LeaderboardData implements Serializable {
 
-	private final HashMap<Member, Double> data;
+	private final HashMap<String, Integer> data;
 
 	public LeaderboardData() {
 		this.data = new HashMap<>();
 	}
 
-	public HashMap<Member, Double> getData() {
+	public HashMap<String, Integer> getData() {
 		return data;
 	}
 
 	public double getRawXP(Member member) {
-		return data.getOrDefault(member, 0.0);
+		return data.getOrDefault(member.getId(), 0);
 	}
 
 }

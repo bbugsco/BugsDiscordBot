@@ -4,7 +4,7 @@ import com.github.bbugsco.leaderboard.Leaderboard;
 import com.github.bbugsco.listeners.CommandListener;
 import com.github.bbugsco.listeners.MemberJoin;
 import com.github.bbugsco.listeners.ReadyListener;
-import net.dv8tion.jda.api.JDA;
+
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -21,16 +21,17 @@ public class Bot {
 		// Create bot
 		JDABuilder builder = JDABuilder.createDefault(token);
 
+		// Settomgs
 		builder.setEventPassthrough(true);
 		builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE);
 		builder.setBulkDeleteSplittingEnabled(false);
 		builder.setActivity(Activity.of(Activity.ActivityType.WATCHING, "you"));
 
-
 		// Add intents
 		builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
 		builder.enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS);
 		builder.enableIntents(GatewayIntent.GUILD_MESSAGES);
+		builder.enableIntents(GatewayIntent.MESSAGE_CONTENT);
 
 		// Add listeners
 		builder.addEventListeners(new ReadyListener());

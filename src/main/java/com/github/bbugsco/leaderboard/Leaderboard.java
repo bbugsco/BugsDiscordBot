@@ -9,6 +9,8 @@ import net.dv8tion.jda.api.hooks.EventListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 
 public class Leaderboard implements EventListener {
@@ -38,16 +40,17 @@ public class Leaderboard implements EventListener {
 
 			Member member = ((MessageReceivedEvent) genericEvent).getMember();
 			if (member == null) return;
+			if (member.getEffectiveName().equalsIgnoreCase("Bugs Server Bot")) return;
 
 			// Calculate message xp
 			Message message = ((MessageReceivedEvent) genericEvent).getMessage();
 			String messageContent = message.getContentRaw();
 			// Ignore bot commands
-			if (messageContent.equalsIgnoreCase("!level") || messageContent.equalsIgnoreCase("!leaderboard")) return;
-			int length = messageContent.length();
-			double xp = (Math.log(length) / Math.log(1.1)) + 1;
+			if (messageContent.contains("!level") || messageContent.contains("!leaderboard") || messageContent.contains("!xp")) return;
+			double length = messageContent.length();
+			int xp = (int) (Math.floor(Math.log(length) / Math.log(1.1D)) + 1D);
 
-			if (leaderboardData.getData().containsKey(member)) {
+			if (leaderboardData.getData().containsKey(member.getId())) {
 				// Check cool down
 				if (lastMessage.containsKey(member)) {
 					if (System.currentTimeMillis() - 5000 < lastMessage.get(member)) {
@@ -57,12 +60,11 @@ public class Leaderboard implements EventListener {
 				}
 
 				// Update leaderboard
-				leaderboardData.getData().put(member, leaderboardData.getData().get(member) + xp);
+				leaderboardData.getData().put(member.getId(), leaderboardData.getData().get(member.getId()) + xp);
 			} else {
-				leaderboardData.getData().put(member, xp);
+				leaderboardData.getData().put(member.getId(), xp);
 			}
 
-			System.out.println(member.getEffectiveName() + " said something");
 			this.lastMessage.put(member,  System.currentTimeMillis());
 			this.serialize();
 		}
@@ -74,16 +76,16 @@ public class Leaderboard implements EventListener {
 	 */
 
 	private LeaderboardData deserialize() {
+
 		LeaderboardData deserializedObject = null;
-		try (FileInputStream fileInputStream = new FileInputStream("serializedObject.ser");
-		     ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
-			 deserializedObject = (LeaderboardData) objectInputStream.readObject();
-			 System.out.println("Object deserialized. Data: " + deserializedObject.getData());
+		try (ObjectInputStream objectInputStream = new ObjectInputStream(Files.newInputStream(Paths.get(FILENAME)))) {
+			deserializedObject = (LeaderboardData) objectInputStream.readObject();
 		} catch (IOException | ClassNotFoundException e) {
 			e.fillInStackTrace();
-			System.out.println(e.getMessage());
+			System.out.println("Error deserializing file");
 		}
-		return deserializedObject;
+		return deserializedObject != null ? deserializedObject : new LeaderboardData();
+
 	}
 
 
@@ -92,14 +94,12 @@ public class Leaderboard implements EventListener {
 		try (FileOutputStream fileOutputStream = new FileOutputStream(FILENAME);
 		     ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
 			objectOutputStream.writeObject(this.leaderboardData);
-			System.out.println("Object serialized and stored in 'serializedObject.ser'");
 		} catch (IOException e) {
 			e.fillInStackTrace();
-			System.out.println(e.getMessage());
+			System.out.println("Error serializing file");
 		}
 
 	}
-
 
 	private boolean saveFileExists() {
 		File file = new File(FILENAME);
