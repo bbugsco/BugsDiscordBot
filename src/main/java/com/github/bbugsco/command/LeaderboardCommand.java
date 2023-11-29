@@ -105,5 +105,4 @@ public class LeaderboardCommand implements BotCommand {
 		}
 		return -1;
 	}
-
 }
