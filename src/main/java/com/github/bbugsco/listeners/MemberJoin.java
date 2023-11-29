@@ -26,11 +26,6 @@ public class MemberJoin implements EventListener {
 				return;
 			}
 
-			// Check if property is missing
-			if (!bot.getProperties().contains("welcome_message")) {
-				bot.getProperties().put("welcome_message", "Welcome {user_mention} to {guild_name}!");
-			}
-
 			Member joiningMember =  ((GuildMemberJoinEvent) event).getMember();
 			String welcomeMessage = bot.getProperties().getProperty("welcome_message");
 
@@ -44,7 +39,6 @@ public class MemberJoin implements EventListener {
 			}
 
 			((GuildMemberJoinEvent) event).getGuild().getDefaultChannel().asTextChannel().sendMessage(welcomeMessage).queue();
-
 		}
 	}
 }

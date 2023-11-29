@@ -1,5 +1,6 @@
 package com.github.bbugsco.listeners;
 
+import com.github.bbugsco.Bot;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -13,19 +14,33 @@ import java.util.concurrent.TimeUnit;
 
 public class AutoRoleOnJoin implements EventListener {
 
+	private final Bot bot;
+
+	public AutoRoleOnJoin(Bot bot) {
+		this.bot = bot;
+	}
 
 	@Override
 	public void onEvent(@NotNull GenericEvent event) {
 		if (event instanceof GuildMemberJoinEvent) {
-
-			System.out.println("Member joined: " + ((GuildMemberJoinEvent) event).getMember().getEffectiveName() + " in guild " + ((GuildMemberJoinEvent) event).getGuild().getName() + ".");
+			if (!bot.getProperties().contains("auto_role")) bot.getProperties().put("auto_role", "true");
+			if (!Boolean.parseBoolean(bot.getProperties().getProperty("auto_role"))) return;
 
 			// Add member role
-			Guild guild = ((GuildMemberJoinEvent) event).getGuild();
-			if (getMemberRole(guild) == null) {
-				createMemberRole(guild);
+			String autoRoleName = bot.getProperties().getProperty("role_name");
+			if (autoRoleName == null) return;
+
+			// Check if member role exists, if not, create it.
+			if (getAutoRole(((GuildMemberJoinEvent) event).getGuild()) == null) {
+				createAutoRole(((GuildMemberJoinEvent) event).getGuild());
 			}
-			while (getMemberRole(guild) == null) {
+
+			Guild guild = ((GuildMemberJoinEvent) event).getGuild();
+			if (getAutoRole(guild)  == null) {
+				createAutoRole(guild);
+			}
+
+			while (getAutoRole(guild) == null) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(50);
 				} catch (InterruptedException e) {
@@ -33,30 +48,28 @@ public class AutoRoleOnJoin implements EventListener {
 					System.out.println(e.getMessage());
 				}
 			}
-			addRoleToMember(((GuildMemberJoinEvent) event).getMember(), getMemberRole(guild));
+
+			addRoleToMember(((GuildMemberJoinEvent) event).getMember(), getAutoRole(guild));
 
 		}
 	}
 
-
-	private void createMemberRole(Guild guild) {
+	private void createAutoRole(Guild guild) {
 		guild.createRole()
-				.setName("Member")
-				.setColor(0x2e4d80)
+				.setName(bot.getProperties().getProperty("role_name"))
+				.setColor(Integer.parseInt(bot.getProperties().getProperty("role_color").substring(2), 16))
 				.setHoisted(true)
 				.queue(role -> System.out.println("Role created: " + role.getName() + " in guild " + guild.getName()));
 	}
 
-
-	private Role getMemberRole(Guild guild) {
+	private Role getAutoRole(Guild guild) {
 		for (Role role : guild.getRoles()) {
-			if (role.getName().equalsIgnoreCase("member")) {
+			if (role.getName().equalsIgnoreCase(bot.getProperties().getProperty("role_name"))) {
 				return role;
 			}
 		}
 		return null;
 	}
-
 
 	private void addRoleToMember(Member member, Role role) {
 		try {
@@ -66,6 +79,5 @@ public class AutoRoleOnJoin implements EventListener {
 			System.out.println(e.getMessage());
 		}
 	}
-
 
 }

@@ -34,6 +34,7 @@ public class Bot {
 			e.fillInStackTrace();
 			System.out.println(e.getMessage());
 		}
+		System.out.println(properties);
 
 		// Create bot
 		JDABuilder builder = JDABuilder.createDefault(token);
@@ -53,7 +54,7 @@ public class Bot {
 		// Add listeners
 		builder.addEventListeners(new ReadyListener());
 		builder.addEventListeners(new MemberJoin(this));
-		builder.addEventListeners(new AutoRoleOnJoin());
+		builder.addEventListeners(new AutoRoleOnJoin(this));
 		builder.addEventListeners(new UpdateLeaderboardListener(this.leaderboard));
 		builder.addEventListeners(new CommandListener(this));
 
