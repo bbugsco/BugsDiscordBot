@@ -18,8 +18,6 @@ public class UpdateLeaderboardListener implements EventListener {
 	public UpdateLeaderboardListener(Leaderboard leaderboard) {
 		this.leaderboard = leaderboard;
 
-		// Initialize hashmap to track cooldowns
-		// todo: remove from hashmap on offline
 		this.lastMessage = new HashMap<>();
 	}
 
@@ -49,11 +47,9 @@ public class UpdateLeaderboardListener implements EventListener {
 
 			// Update leaderboard
 			leaderboard.addXP(member, xp);
-
 			this.lastMessage.put(member, System.currentTimeMillis());
 			leaderboard.serialize();
 
 		}
 	}
-
 }
