@@ -17,7 +17,6 @@ public class UpdateLeaderboardListener implements EventListener {
 
 	public UpdateLeaderboardListener(Leaderboard leaderboard) {
 		this.leaderboard = leaderboard;
-
 		this.lastMessage = new HashMap<>();
 	}
 
@@ -38,7 +37,7 @@ public class UpdateLeaderboardListener implements EventListener {
 			int xp = (int) (Math.floor(Math.log(length) / Math.log(1.1D)) + 1D);
 
 			// Check cool down
-			if (lastMessage.containsKey(member)) {
+			if (lastMessage.containsKey(member) || length < 1) {
 				if (System.currentTimeMillis() - 5000 < lastMessage.get(member)) {
 					// Cool down
 					return;

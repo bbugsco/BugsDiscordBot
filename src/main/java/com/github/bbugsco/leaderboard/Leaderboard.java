@@ -9,7 +9,8 @@ import java.nio.file.Paths;
 public class Leaderboard {
 
 	private final LeaderboardObject leaderboardObject;
-	private final String FILENAME = "leaderboard.ser";
+	// private final String FILENAME = "/home/*****/discord/leaderboard.ser";
+	private final String FILENAME = "/home/bbugsco/discord/leaderboard.ser";
 
 	public Leaderboard() {
 		// Load leaderboard object from file
@@ -17,6 +18,22 @@ public class Leaderboard {
 			this.leaderboardObject = this.deserialize();
 		} else {
 			this.leaderboardObject = new LeaderboardObject();
+		}
+		validate();
+	}
+
+	private void validate() {
+		if (this.leaderboardObject == null) {
+			throw new RuntimeException("Leaderboard object is null");
+		}
+		if (this.leaderboardObject.getData() == null) {
+			throw new RuntimeException("Leaderboard data is null");
+		}
+		for (String username : leaderboardObject.getData().keySet()) {
+			if (leaderboardObject.getData().get(username) < 0) {
+				System.out.println("Invalid data for user " + username + ": xp=" + leaderboardObject.getData().get(username));
+				leaderboardObject.getData().put(username, 0);
+			}
 		}
 	}
 

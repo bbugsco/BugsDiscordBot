@@ -1,13 +1,16 @@
 package com.github.bbugsco.listeners;
 
 import com.github.bbugsco.Bot;
+
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.hooks.EventListener;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
@@ -76,7 +79,11 @@ public class AutoRoleOnJoin implements EventListener {
 			member.getGuild().addRoleToMember(member, role).queue(success -> System.out.println("Role added to " + member.getEffectiveName() + ": " + role.getName()), failure -> System.out.println("Failed to add role to " + member.getEffectiveName() + ": " + failure.getMessage()));
 		} catch(HierarchyException e) {
 			e.fillInStackTrace();
-			System.out.println(e.getMessage());
+			if (member.getGuild().getDefaultChannel() instanceof TextChannel) {
+				member.getGuild().getDefaultChannel().asTextChannel().sendMessage("Please assign my role higher then the role " + role.getName()).queue();
+			} else {
+				System.out.println(e.getMessage());
+			}
 		}
 	}
 

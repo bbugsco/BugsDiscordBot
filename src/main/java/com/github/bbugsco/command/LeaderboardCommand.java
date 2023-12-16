@@ -1,14 +1,12 @@
 package com.github.bbugsco.command;
 
 import com.github.bbugsco.Bot;
+
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -40,17 +38,20 @@ public class LeaderboardCommand implements BotCommand {
 					StringBuilder builder = new StringBuilder();
 					builder.append("Leaderboard:\n");
 					int rank = 1;
+					int count = 0;
 					for (Map.Entry<Member, Integer> entry : sortedMap.entrySet()) {
+						if (count >= 8) break;
 						Member member = entry.getKey();
 						int xp = entry.getValue();
 						builder.append("> ").append(rank++).append(") ").append(member.getEffectiveName()).append(": ").append(xp).append(" xp\n");
+						count++;
 					}
 					message.getChannel().sendMessage(builder.toString()).queue();
 				} else {
 					// Top 5
 					StringBuilder builder = new StringBuilder();
 					builder.append("Leaderboard:\n");
-					for (int i = 5; i < sortedMap.size(); i++) {
+					for (int i = 0; i < 5 || i < sortedMap.size(); i++) {
 						Member member = (Member) sortedMap.keySet().toArray()[i];
 						int xp = sortedMap.get(member);
 						builder.append("> ").append(member.getEffectiveName()).append(": ").append(xp).append(" xp\n");
