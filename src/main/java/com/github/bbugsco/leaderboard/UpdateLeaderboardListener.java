@@ -35,6 +35,7 @@ public class UpdateLeaderboardListener implements EventListener {
 				return;
 			double length = messageContent.length();
 			int xp = (int) (Math.floor(Math.log(length) / Math.log(1.1D)) + 1D);
+            if (xp < 1) return;
 
 			// Check cool down
 			if (lastMessage.containsKey(member) || length < 1) {
